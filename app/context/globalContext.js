@@ -1,16 +1,33 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import axios from "axios";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const GlobalContext = createContext();
 const GlobalContextUpdate = createContext();
 
 export const GlobalContextProvider = ({ children }) =>{
+    const [ forecast, setForcecast ] = useState({});
 
-    const [state, setState] = useState("hello");
+    const fecthForcast = async () =>{
+        try {
+            const res = await axios.get("api/weather")
+
+            setForcecast(res.data);
+        } catch (error) {
+            console.log("Error fetching forecast data: error.message");
+        }
+    };
+
+
+    useEffect(() =>{
+        fecthForcast();
+    }, []);
 
     return(
-        <GlobalContext.Provider value={{state}}>
+        <GlobalContext.Provider value={{
+            forecast,
+        }}>
             <GlobalContextUpdate.Provider>
                 {children}
             </GlobalContextUpdate.Provider>
